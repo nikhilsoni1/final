@@ -57,6 +57,6 @@ master.az<-master[which(master$REPORTABLE_DOMAIN==24),]
 ucol<-read.csv('inp/usecol.csv')
 ucol<-(ucol$Variable.Name)
 master.az<-master.az[,ucol]
-df<-master.az # Subset with only data for AZ and useful columns
+master<-master.az # Subset with only data for AZ and useful columns
 rm(master,master.az,ucol)
 save(list=ls(all=T),file='final.RData')
