@@ -3,7 +3,7 @@ setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 load(paste0(dirname(rstudioapi::getSourceEditorContext()$path), '/final.Rdata'))
 
 # include----
-
+library(corrplot)
 # functions----
 completeness<-function(dat)
 {
@@ -56,7 +56,8 @@ master<-read.csv("inp/recs2009_public.csv")
 master.az<-master[which(master$REPORTABLE_DOMAIN==24),]
 ucol<-read.csv('inp/usecol.csv')
 ucol<-(ucol$Variable.Name)
+ucol<-as.character(ucol)
 master.az<-master.az[,ucol]
 master<-master.az # Subset with only data for AZ and useful columns
-rm(master,master.az,ucol)
+rm(master.az,ucol)
 save(list=ls(all=T),file='final.RData')
