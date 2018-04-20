@@ -1,99 +1,196 @@
-Variable Name,Variable Label,Variable Order in File,Variable Type,Length,Keep
-TYPEHUQ,Type of housing unit,5,Numeric,8,1
-NWEIGHT,Final sample weight,6,Numeric,8,1
-HDD65,"Heating degree days in 2009, base temperature 65F",7,Numeric,8,1
-CDD65,"Cooling degree days in 2009, base temperature 65F",8,Numeric,8,1
-HDD30YR,"Heating degree days, 30-year average 1981-2010, base 65F",9,Numeric,8,1
-CDD30YR,"Cooling degree days, 30-year average 1981-2010, base 65F",10,Numeric,8,1
-Climate_Region_Pub,Building America Climate Region (collapsed for public file),11,Numeric,8,1
-AIA_Zone,"AIA Climate Zone, based on average temperatures from 1981 - 2010",12,Numeric,8,1
-METROMICRO,Housing unit in Census Metropolitan Statistical Area or Micropolitan Statistical Area,13,Character,5,1
-UR,Housing unit classified as urban or rural by Census,14,Character,1,1
-WALLTYPE,Major outside wall material,25,Numeric,8,1
-ROOFTYPE,Major roofing material,26,Numeric,8,1
-HEATHOME,Space heating equipment used,426,Numeric,8,1
-DNTHEAT,"No space heating equipment, or unused space heating equipment",427,Numeric,8,1
-EQUIPNOHEAT,Unused space heating equipment type,428,Numeric,8,1
-FUELNOHEAT,Fuel for unused space heating equipment,429,Numeric,8,1
-EQUIPM,Type of main space heating equpiment used,430,Numeric,8,1
-FUELHEAT,Main space heating fuel,431,Numeric,8,1
-EQUIPAGE,Age of main space heating equipment,433,Numeric,8,1
-REPLCHT,Main space heating equipment replaced by this household in the last 4 years,434,Numeric,8,1
-HEATOTH,"Main space heating equipment heats other homes, business, or farm",437,Numeric,8,1
-EQUIPAUX,Secondary space heating equipment used,438,Numeric,8,1
-REVERSE,Heat pump used for secondary space heating,439,Numeric,3,1
-WARMAIR,Central warm-air furnace used for secondary space heating,440,Numeric,3,1
-FURNFUEL,Fuel used by warm-air furnace for secondary space heating,441,Numeric,8,1
-STEAMR,Hot water system used for secondary space heating,442,Numeric,3,1
-RADFUEL,Fuel used by hot water system for secondary space heating,443,Numeric,8,1
-PERMELEC,Built-in electric units used for secondary space heating,444,Numeric,3,1
-PIPELESS,Pipeless furnace used for secondary space heating,445,Numeric,3,1
-PIPEFUEL,Fuel used by pipeless furnace for secondary space heating,446,Numeric,8,1
-ROOMHEAT,Built-in room heaters used for secondary space hearing,447,Numeric,3,1
-RMHTFUEL,Fuel used by built-in electric units for secondary space heating,448,Numeric,8,1
-WOODKILN,Heating stove used for secondary space heating,449,Numeric,3,1
-HSFUEL,Fuel used by heating stove for secondary space heating,450,Numeric,8,1
-CARRYEL,Portable electric heaters used for secondary space heating,451,Numeric,3,1
-CARRYKER,Portable kerosene heaters used for secondary space heating,452,Numeric,3,1
-CHIMNEY,Fireplace used for secondary space heating,453,Numeric,3,1
-FPFUEL,Fuel used by fireplace for secondary space heating,454,Numeric,8,1
-NGFPFLUE,Flue on gas fireplace,455,Numeric,8,1
-USENGFP,Frequency gas fireplace used,456,Numeric,8,1
-RANGE,Cooking stove used for secondary space heating,457,Numeric,3,1
-RNGFUEL,Fuel used by cooking stove for secondary space heating,458,Numeric,8,1
-DIFEQUIP,Other equipment used for secondary space heating,459,Numeric,3,1
-DIFFUEL,Fuel used by other secondary space heating equipment,460,Numeric,8,1
-EQMAMT,Portion of space heating provided by main space heating equipment (for homes with main and secondary heating only),461,Numeric,8,1
-HEATROOM,Number of rooms heated,462,Numeric,8,1
-THERMAIN,Thermostat(s) for heating equipment,463,Numeric,8,1
-NUMTHERM,Number of thermostats,464,Numeric,8,1
-PROTHERM,Programmable main thermostat,465,Numeric,8,1
-AIRCOND,Air conditioning equipment used,530,Numeric,8,1
-DNTAC,"No air conditioning equipment, or unused air conditioning equipment",531,Numeric,8,1
-COOLTYPENOAC,Type of unused air conditioning equipment,532,Numeric,8,1
-COOLTYPE,Type of air conditioning equipment used,533,Numeric,8,1
-ACROOMS,Number of rooms cooled,542,Numeric,8,1
-USECENAC,Frequency central air conditioner used in summer 2009,543,Numeric,8,1
-NUMBERAC,Number of window/wall air conditioning units used,551,Numeric,8,1
-NUMCFAN,Number of ceiling fans used,558,Numeric,8,1
-TREESHAD,Housing unit shaded from sun by large trees,560,Numeric,8,1
-USEEL,Electricity is used in home,654,Numeric,3,1
-ELWARM,Electricity used for space heating,662,Numeric,3,1
-ELECAUX,Electricity used for secondary space heating,663,Numeric,3,1
-ELCOOL,Electricity used for air conditioning,664,Numeric,3,1
-ELWATER,Electricity used for water heating,665,Numeric,3,1
-PELHEAT,Who pays for electricity used for space heating,700,Numeric,8,1
-PELHOTWA,Who pays for electricity used for water heating,701,Numeric,8,1
-PELAC,Who pays for electricity used for air conditioning,703,Numeric,8,1
-PELLIGHT,Who pays for electricity used for lighting and other appliances,704,Numeric,8,1
-EMPLOYHH,Employment status of householder,755,Numeric,8,1
-SPOUSE,Householder lives with spouse or partner,756,Numeric,8,1
-NHSLDMEM,Number of household members,760,Numeric,8,1
-HBUSNESS,Home-based business or service,775,Numeric,8,1
-ATHOME,Household member at home on typical week days,776,Numeric,8,1
-MONEYPY,2009 gross household income,786,Numeric,8,1
-POVERTY100,Household income at or below 100% of poverty line,787,Numeric,8,1
-POVERTY150,Household income at or below 150% of poverty line,788,Numeric,8,1
-HUPROJ,Housing unit in public housing authority,789,Numeric,8,1
-TOTSQFT,"Total square footage (includes all attached garages, all basements, and finished/heated/cooled attics)",828,Numeric,8,1
-TOTSQFT_EN,"Total square footage (includes heated/cooled garages, all basements, and finished/heated/cooled attics). Used for EIA data tables.",829,Numeric,8,1
-TOTHSQFT,Total heated square footage,830,Numeric,8,1
-TOTUSQFT,Total unheated square footage,831,Numeric,8,1
-TOTCSQFT,Total cooled square footage,832,Numeric,8,1
-TOTUCSQFT,Total uncooled square footage,833,Numeric,8,1
-KWH,"Total Site Electricity usage, in kilowatt-hours, 2009",840,Numeric,8,1
-KWHSPH,"Electricity usage for space heating, in kilowatt-hours, 2009",841,Numeric,8,R
-KWHCOL,"Electricity usage for air-conditioning, central and window/wall (room), in kilowatt-hours, 2009",842,Numeric,8,R
-KWHWTH,"Electricity usage for water heating, in kilowatt-hours, 2009",843,Numeric,8,R
-DOLLAREL,"Total Electricity cost, in whole dollars, 2009",852,Numeric,8,1
-DOLELSPH,"Electricity cost for space heating, in whole dollars, 2009",853,Numeric,8,1
-DOLELCOL,"Electricity cost for air-conditioning, central and window/wall (room), in whole dollars, 2009",854,Numeric,8,1
-DOLELWTH,"Electricity cost for water heating, in whole dollars, 2009",855,Numeric,8,1
-TOTALDOL,"Total cost, in whole dollars, 2009",914,Numeric,8,1
-TOTALDOLSPH,"Total cost for space heating, in whole dollars, 2009",915,Numeric,8,1
-TOTALDOLCOL,"Total cost for air conditioning, in whole dollars, 2009",916,Numeric,8,1
-TOTALDOLWTH,"Total cost for water heating, in whole dollars, 2009",917,Numeric,8,1
-HDD50,"Heating degree days in 2009, base temperature 50F",933,Numeric,8,1
-CDD80,"Cooling degree days in 2009, base temperature 80F",934,Numeric,8,1
-GND_HDD65,"Heating degree days of ground temperature in 2009, base temperature 65F",935,Numeric,8,1
-WSF,Weather & shielding factor for the housing unit,936,Numeric,8,1
+Variable Name,Variable Label,Variable Order in File,Variable Type,Length,Keep,Factors,FT
+TYPEHUQ,Type of housing unit,5,Numeric,8,1,"1
+2
+3
+4
+5",of
+NWEIGHT,Final sample weight,6,Numeric,8,1,0,nf
+HDD65,"Heating degree days in 2009, base temperature 65F",7,Numeric,8,1,0,nf
+CDD65,"Cooling degree days in 2009, base temperature 65F",8,Numeric,8,1,0,nf
+HDD30YR,"Heating degree days, 30-year average 1981-2010, base 65F",9,Numeric,8,1,0,nf
+CDD30YR,"Cooling degree days, 30-year average 1981-2010, base 65F",10,Numeric,8,1,0,nf
+Climate_Region_Pub,Building America Climate Region (collapsed for public file),11,Numeric,8,1,"1
+2
+3
+4
+5",f
+AIA_Zone,"AIA Climate Zone, based on average temperatures from 1981 - 2010",12,Numeric,8,1,"1
+2
+3
+4
+5",of
+METROMICRO,Housing unit in Census Metropolitan Statistical Area or Micropolitan Statistical Area,13,Character,5,1,"METRO
+MICRO
+NONE",f
+UR,Housing unit classified as urban or rural by Census,14,Character,1,1,"U
+R",f
+WALLTYPE,Major outside wall material,25,Numeric,8,1,"1
+2
+3
+4
+5
+6
+7
+8
+9",f
+ROOFTYPE,Major roofing material,26,Numeric,8,1,"1
+2
+3
+4
+5
+6
+7
+8
+-2",f
+HEATHOME,Space heating equipment used,426,Numeric,8,1,"0
+1",f
+DNTHEAT,"No space heating equipment, or unused space heating equipment",427,Numeric,8,1,"1
+2
+-2",f
+EQUIPM,Type of main space heating equpiment used,430,Numeric,8,1,"2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+21
+-2",f
+FUELHEAT,Main space heating fuel,431,Numeric,8,1,"1
+2
+3
+4
+5
+7
+8
+9
+21
+-2",f
+EQUIPAGE,Age of main space heating equipment,433,Numeric,8,1,"1
+2
+3
+41
+42
+5
+-2",of
+REPLCHT,Main space heating equipment replaced by this household in the last 4 years,434,Numeric,8,1,"0
+1
+-2
+-8
+-9",f
+HEATOTH,"Main space heating equipment heats other homes, business, or farm",437,Numeric,8,1,"0
+1
+-2",f
+EQUIPAUX,Secondary space heating equipment used,438,Numeric,8,1,"0
+1
+-2",f
+REVERSE,Heat pump used for secondary space heating,439,Numeric,3,1,"0
+1
+-2",f
+WARMAIR,Central warm-air furnace used for secondary space heating,440,Numeric,3,1,"0
+1
+-2",f
+FURNFUEL,Fuel used by warm-air furnace for secondary space heating,441,Numeric,8,1,"1
+2
+3
+4
+5
+7
+8
+9
+21
+-2",f
+STEAMR,Hot water system used for secondary space heating,442,Numeric,3,1,"0
+1
+-2",f
+EQMAMT,Portion of space heating provided by main space heating equipment (for homes with main and secondary heating only),461,Numeric,8,1,"1
+2
+3
+-2",f
+HEATROOM,Number of rooms heated,462,Numeric,8,1,"1 - 25
+-2",f
+PROTHERM,Programmable main thermostat,465,Numeric,8,1,"0
+1
+-2",f
+AIRCOND,Air conditioning equipment used,530,Numeric,8,1,"0
+1",f
+USECENAC,Frequency central air conditioner used in summer 2009,543,Numeric,8,1,"1
+2
+3
+-2",f
+NUMBERAC,Number of window/wall air conditioning units used,551,Numeric,8,1,"1 - 15
+-2",f
+NUMCFAN,Number of ceiling fans used,558,Numeric,8,1,0 - 15,f
+TREESHAD,Housing unit shaded from sun by large trees,560,Numeric,8,1,"0
+1",f
+USEEL,Electricity is used in home,654,Numeric,3,1,"0
+1",f
+ELWARM,Electricity used for space heating,662,Numeric,3,1,"0
+1",f
+ELECAUX,Electricity used for secondary space heating,663,Numeric,3,1,"0
+1",f
+ELCOOL,Electricity used for air conditioning,664,Numeric,3,1,"0
+1",f
+ELWATER,Electricity used for water heating,665,Numeric,3,1,"0
+1",f
+EMPLOYHH,Employment status of householder,755,Numeric,8,1,"0
+1
+2",f
+NHSLDMEM,Number of household members,760,Numeric,8,1,0 - 15,f
+HBUSNESS,Home-based business or service,775,Numeric,8,1,"0
+1",f
+ATHOME,Household member at home on typical week days,776,Numeric,8,1,"0
+1",f
+MONEYPY,2009 gross household income,786,Numeric,8,1,"1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24",of
+POVERTY100,Household income at or below 100% of poverty line,787,Numeric,8,1,"0
+1",f
+POVERTY150,Household income at or below 150% of poverty line,788,Numeric,8,1,"0
+1",f
+TOTSQFT,"Total square footage (includes all attached garages, all basements, and finished/heated/cooled attics)",828,Numeric,8,1,0,nf
+TOTSQFT_EN,"Total square footage (includes heated/cooled garages, all basements, and finished/heated/cooled attics). Used for EIA data tables.",829,Numeric,8,1,0,nf
+TOTHSQFT,Total heated square footage,830,Numeric,8,1,0,nf
+TOTUSQFT,Total unheated square footage,831,Numeric,8,1,0,nf
+TOTCSQFT,Total cooled square footage,832,Numeric,8,1,0,nf
+TOTUCSQFT,Total uncooled square footage,833,Numeric,8,1,0,nf
+KWH,"Total Site Electricity usage, in kilowatt-hours, 2009",840,Numeric,8,1,0,nf
+KWHSPH,"Electricity usage for space heating, in kilowatt-hours, 2009",841,Numeric,8,R,0,nf
+KWHCOL,"Electricity usage for air-conditioning, central and window/wall (room), in kilowatt-hours, 2009",842,Numeric,8,R,0,nf
+KWHWTH,"Electricity usage for water heating, in kilowatt-hours, 2009",843,Numeric,8,R,0,nf
+DOLLAREL,"Total Electricity cost, in whole dollars, 2009",852,Numeric,8,1,0,nf
+DOLELSPH,"Electricity cost for space heating, in whole dollars, 2009",853,Numeric,8,1,0,nf
+DOLELCOL,"Electricity cost for air-conditioning, central and window/wall (room), in whole dollars, 2009",854,Numeric,8,1,0,nf
+DOLELWTH,"Electricity cost for water heating, in whole dollars, 2009",855,Numeric,8,1,0,nf
+TOTALDOL,"Total cost, in whole dollars, 2009",914,Numeric,8,1,0,nf
+TOTALDOLSPH,"Total cost for space heating, in whole dollars, 2009",915,Numeric,8,1,0,nf
+TOTALDOLCOL,"Total cost for air conditioning, in whole dollars, 2009",916,Numeric,8,1,0,nf
+TOTALDOLWTH,"Total cost for water heating, in whole dollars, 2009",917,Numeric,8,1,0,nf
+HDD50,"Heating degree days in 2009, base temperature 50F",933,Numeric,8,1,0,nf
+CDD80,"Cooling degree days in 2009, base temperature 80F",934,Numeric,8,1,0,nf
+GND_HDD65,"Heating degree days of ground temperature in 2009, base temperature 65F",935,Numeric,8,1,0,nf
