@@ -1,9 +1,11 @@
 # init----
+resp="KWHSPC"
 setwd(dirname(rstudioapi::getSourceEditorContext()$path))
 load(paste0(dirname(rstudioapi::getSourceEditorContext()$path), '/final.Rdata'))
 
 # include----
-
+library(corrplot)
+library(gam)
 # functions----
 completeness<-function(dat)
 {
@@ -55,8 +57,43 @@ crossValidate<-function(cvtype,folds,dataset,model,resp)
 master<-read.csv("inp/recs2009_public.csv")
 master.az<-master[which(master$REPORTABLE_DOMAIN==24),]
 ucol<-read.csv('inp/usecol.csv')
-ucol<-(ucol$Variable.Name)
-master.az<-master.az[,ucol]
-df<-master.az # Subset with only data for AZ and useful columns
-rm(master,master.az,ucol)
+ucol.x<-ucol$Variable.Name
+ucol.x<-as.character(ucol.x)
+ucol.y<-ucol[which(ucol$Keep == 'R'),'Variable.Name']
+ucol.y<-as.character(ucol.y)
+ucol.of<-ucol[which(ucol$FT=='of'),"Variable.Name"]
+ucol.of<-as.character(ucol.of)
+ucol.f<-ucol[which(ucol$FT=='f'),"Variable.Name"]
+ucol.f<-as.character(ucol.f)
+ucol.nf<-ucol[which(ucol$FT=='nf'),"Variable.Name"]
+ucol.nf<-as.character(ucol.nf)
+master.az<-master.az[,ucol.x]
+master.az$KWHSPC<-rowSums(master.az[,ucol.y])
+rownames(master.az)<-NULL
+master.az<-master.az[,!names(master.az) %in% ucol.y]
+master.az[,ucol.of]<-lapply(master.az[ucol.of],factor,ordered=TRUE)
+master.az[,ucol.f]<-lapply(master.az[ucol.f],factor)
+master<-master.az # Subset with only data for AZ and useful columns
+set.seed(9)
+rows<-sample(1:nrow(master),0.80*nrow(master),replace = F)
+master.train<-master[rows,]
+master.test<-master[-rows,]
+cat("\014")
+rm(master.az,ucol,ucol.x,ucol.y,rows)
+
+# EDA----
+lT2<-rapply(master.train,function(x)length(unique(x)))>2 # All factors with less than 2 unique values were dropped for the purposes of EDA
+lT2<-names(lT2[which(lT2==FALSE)])
+dnt<-append(lT2,resp)
+form.lin<-as.formula(paste0(resp,"~", paste0(colnames(master.train[,!names(master.train) %in% dnt]),collapse="+")))
+form.nonlin<-as.formula(paste0(resp,"~", paste0("s(", colnames(master.train[,!names(master.train) %in% c(ucol.f,dnt)]),", d=4)" ,collapse="+"),
+                               '+', paste0(colnames(master.train[,!names(master.train) %in% c(ucol.nf,ucol.of,dnt)]),collapse="+")))
+
+eda.gam.lin<-gam(formula=form.lin,data=master.train)
+eda.gam.nonlin<-gam(formula=form.nonlin,data=master.train)
+rm(form.lin,form.nonlin,dnt,lT2)
+cat("\014")
+
+correlation_matrix<-cor(master[,!names(master) %in% c('METROMICRO','UR')], use="complete.obs")
+corrplot(correlation_matrix)
 save(list=ls(all=T),file='final.RData')
