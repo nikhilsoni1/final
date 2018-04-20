@@ -58,10 +58,10 @@ NUMBERAC,Number of window/wall air conditioning units used,551,Numeric,8,1
 NUMCFAN,Number of ceiling fans used,558,Numeric,8,1
 TREESHAD,Housing unit shaded from sun by large trees,560,Numeric,8,1
 USEEL,Electricity is used in home,654,Numeric,3,1
-ELWARM,Electricity used for space heating,662,Numeric,3,R
-ELECAUX,Electricity used for secondary space heating,663,Numeric,3,R
-ELCOOL,Electricity used for air conditioning,664,Numeric,3,R
-ELWATER,Electricity used for water heating,665,Numeric,3,R
+ELWARM,Electricity used for space heating,662,Numeric,3,1
+ELECAUX,Electricity used for secondary space heating,663,Numeric,3,1
+ELCOOL,Electricity used for air conditioning,664,Numeric,3,1
+ELWATER,Electricity used for water heating,665,Numeric,3,1
 PELHEAT,Who pays for electricity used for space heating,700,Numeric,8,1
 PELHOTWA,Who pays for electricity used for water heating,701,Numeric,8,1
 PELAC,Who pays for electricity used for air conditioning,703,Numeric,8,1
@@ -82,9 +82,9 @@ TOTUSQFT,Total unheated square footage,831,Numeric,8,1
 TOTCSQFT,Total cooled square footage,832,Numeric,8,1
 TOTUCSQFT,Total uncooled square footage,833,Numeric,8,1
 KWH,"Total Site Electricity usage, in kilowatt-hours, 2009",840,Numeric,8,1
-KWHSPH,"Electricity usage for space heating, in kilowatt-hours, 2009",841,Numeric,8,1
-KWHCOL,"Electricity usage for air-conditioning, central and window/wall (room), in kilowatt-hours, 2009",842,Numeric,8,1
-KWHWTH,"Electricity usage for water heating, in kilowatt-hours, 2009",843,Numeric,8,1
+KWHSPH,"Electricity usage for space heating, in kilowatt-hours, 2009",841,Numeric,8,R
+KWHCOL,"Electricity usage for air-conditioning, central and window/wall (room), in kilowatt-hours, 2009",842,Numeric,8,R
+KWHWTH,"Electricity usage for water heating, in kilowatt-hours, 2009",843,Numeric,8,R
 DOLLAREL,"Total Electricity cost, in whole dollars, 2009",852,Numeric,8,1
 DOLELSPH,"Electricity cost for space heating, in whole dollars, 2009",853,Numeric,8,1
 DOLELCOL,"Electricity cost for air-conditioning, central and window/wall (room), in whole dollars, 2009",854,Numeric,8,1

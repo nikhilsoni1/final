@@ -55,9 +55,15 @@ crossValidate<-function(cvtype,folds,dataset,model,resp)
 master<-read.csv("inp/recs2009_public.csv")
 master.az<-master[which(master$REPORTABLE_DOMAIN==24),]
 ucol<-read.csv('inp/usecol.csv')
-ucol<-(ucol$Variable.Name)
-ucol<-as.character(ucol)
-master.az<-master.az[,ucol]
+ucol.x<-ucol$Variable.Name
+ucol.x<-as.character(ucol.x)
+ucol.y<-ucol[which(ucol$Keep == 'R'),'Variable.Name']
+ucol.y<-as.character(ucol.y)
+master.az<-master.az[,ucol.x]
+master.az$KWHSPC<-rowSums(master.az[,ucol.y])
+rownames(master.az)<-NULL
+master.az<-master.az[,!names(master.az) %in% ucol.y]
 master<-master.az # Subset with only data for AZ and useful columns
-rm(master.az,ucol)
+rm(master.az,ucol,ucol.x,ucol.y)
+cat("\014")
 save(list=ls(all=T),file='final.RData')
