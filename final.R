@@ -6,6 +6,7 @@ load(paste0(dirname(rstudioapi::getSourceEditorContext()$path), '/final.Rdata'))
 # include----
 library(corrplot)
 library(gam)
+library(ModelMetrics)
 # functions----
 completeness<-function(dat)
 {
@@ -91,9 +92,18 @@ form.nonlin<-as.formula(paste0(resp,"~", paste0("s(", colnames(master.train[,!na
 
 eda.gam.lin<-gam(formula=form.lin,data=master.train)
 eda.gam.nonlin<-gam(formula=form.nonlin,data=master.train)
-rm(form.lin,form.nonlin,dnt,lT2)
-cat("\014")
+rm(form.lin,form.nonlin,dnt,lT2,ucol.f,ucol.nf,ucol.of,ucol.x,ucol.y)
+keep<-read.csv('inp/keep.csv')
+keep<-keep$out
+keep<-as.character(keep)
+keep<-append(keep,resp)
+master.train<-master.train[,keep] #subsetting only the significant columns
+master.test<-master.test[,keep]
+rm(keep)
 
-correlation_matrix<-cor(master[,!names(master) %in% c('METROMICRO','UR')], use="complete.obs")
-corrplot(correlation_matrix)
+png(filename="plots/scatterplot.png",width=100,height=100,units="in",res=300)
+pairs(KWHSPC~.,data=master.train)
+dev.off()
+
+cat("\014")
 save(list=ls(all=T),file='final.RData')
