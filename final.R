@@ -53,6 +53,14 @@ crossValidate<-function(cvtype,folds,dataset,model,resp)
     return(l)
   }
 }
+loadBart<-function()
+{
+  .libPaths(c(.libPaths(), "/home/sonin/Rlibs"))
+  options(java.parameters="-Xmx100g")
+  library('rJava')
+  library('bartMachine')
+  set_bart_machine_num_cores(20)
+}
 
 # dfcreate----
 master<-read.csv("inp/recs2009_public.csv")
@@ -104,6 +112,11 @@ rm(keep)
 png(filename="plots/scatterplot.png",width=100,height=100,units="in",res=300)
 pairs(KWHSPC~.,data=master.train)
 dev.off()
-
 cat("\014")
+df.train<-master.train
+df.test<-master.test
+# BART----
+bart1<-bartMachine(X=df.train[,!names(df.train) %in% resp],y=df.train[,resp],
+                   serialize = TRUE)
+
 save(list=ls(all=T),file='final.RData')
