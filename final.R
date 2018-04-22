@@ -345,5 +345,5 @@ abline(h=0)
 dev.off()
 
 imp<-append(imp,which(names(df.train)==resp))
-crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
+bart2.cv<-crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
 crossValidate()
