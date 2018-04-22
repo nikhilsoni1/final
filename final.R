@@ -119,6 +119,8 @@ cat("\014")
 rm(master.az,ucol,ucol.x,ucol.y,rows)
 rmse<-data.frame(matrix(ncol=3,nrow=0))
 colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
+rmse.cv<-data.frame(matrix(ncol=3,nrow=0))
+colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
 # EDA----
 lT2<-rapply(master.train,function(x)length(unique(x)))>2 # All factors with less than 2 unique values were dropped for the purposes of EDA
 lT2<-names(lT2[which(lT2==FALSE)])
@@ -346,4 +348,6 @@ dev.off()
 
 imp<-append(imp,which(names(df.train)==resp))
 bart2.cv<-crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
-crossValidate()
+rmse.cv<-rbind(rmse.cv,data.frame('Model'='bart2','RMSE.IS'=bart2.cv[[2]],
+                                  'RMSE.OS'=rmse(predict(bart2,df.test[,imp[!imp %in% which(names(df.train)==resp)]]),df.test[,resp])))
+rm(imp)
