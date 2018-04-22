@@ -12,6 +12,7 @@ library(e1071)
 library(rpart)
 library(rpart.plot)
 library(earth)
+cat("\014")
 # functions----
 completeness<-function(dat)
 {
@@ -261,6 +262,31 @@ dev.off()
 png(filename = "plots/24.mars1_resid_v_pred.png",width=10,height=10,units = 'in',
     res=300)
 plot(y=mars1$residuals,x=mars1$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+
+# GAM----
+scope<-gam.scope(df.train,response = which(colnames(df.train)==resp),smoother = 's',
+                 arg=c("df=4","df=6","d=8"),form=T)
+form<-as.formula(paste0(resp,"~", paste0(colnames(df.train[,!names(df.train) %in% resp]),collapse="+")))
+obj<-gam(formula=form,family=gaussian,data=df.train)
+gam1<-step.Gam(object=obj,scope = scope,direction = 'both',trace = F)
+rm(scope,form,obj)
+rmse <- rbind(rmse,data.frame('Model'="GAM1",'RMSE.IS'=rmse(gam1$y,gam1$fitted.values),
+                              'RMSE.OS'=rmse(predict(gam1,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/25.gam1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=gam1$y,y=gam1$fitted.values,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/26.gam1_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(gam1$residuals,main="Normality Plot for Residuals")
+qqline(gam1$residuals)
+dev.off()
+png(filename = "plots/27.gam1_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=gam1$residuals,x=gam1$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
 abline(h=0)
 dev.off()
 
