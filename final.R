@@ -23,7 +23,7 @@ completeness<-function(dat)
   c=sum(is.na(dat))/(a*b)
   return(round(100*(1-c),digits=2))
 }
-crossValidate<-function(cvtype,folds,dataset,model,resp)
+crossValidate<-function(cvtype,folds=10,dataset,model,resp)
 {
   df<-dataset
   l <- vector("list", 2)
@@ -290,4 +290,34 @@ plot(y=gam1$residuals,x=gam1$fitted.values,xlab='Predicted',ylab='Residuals',mai
 abline(h=0)
 dev.off()
 
-save(list=ls(all=T),file='final.RData')
+# BART2----
+png(filename = "plots/28.bart2_var_selection_by_permute.png",width=10,height=10,units = 'in',res=300)
+bart1.cv.important<-var_selection_by_permute(bart1.cv, 
+                                num_reps_for_avg = 10, num_permute_samples = 100, 
+                                num_trees_for_permute = 20, alpha = 0.05, 
+                                plot = TRUE, num_var_plot = Inf, bottom_margin = 10)
+dev.off()
+imp<-bart1.cv.important$important_vars_local_col_nums
+bart2<-bartMachine(X=df.train[,imp],df.train[,resp],serialize = T)
+rmse <- rbind(rmse,data.frame('Model'='BART2','RMSE.IS'=rmse(bart2$y,bart2$y_hat_train),
+                              'RMSE.OS'=rmse(predict(bart2,df.test[,imp]),df.test[,resp])))
+png(filename = "plots/29.bart2_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=bart2$y,y=bart2$y_hat_train,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/30.bart2_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(bart2$residuals,main="Normality Plot for Residuals")
+qqline(bart2$residuals)
+dev.off()
+png(filename = "plots/31.bart2_yyhat_credible.png",width=10,height=10,units = 'in',
+    res=300)
+plot_y_vs_yhat(bart2, credible_intervals = TRUE)
+dev.off()
+png(filename = "plots/32.bart2_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=bart2$residuals,x=bart2$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+
