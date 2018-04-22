@@ -270,7 +270,7 @@ plot(y=predict(rpart1,df.train)-rpart1$y,x=predict(rpart1,df.train),xlab='Predic
 abline(h=0)
 dev.off()
 
-# MARS----
+# MARS1----
 mars1<-earth(KWHSPC~.,df.train)
 rmse <- rbind(rmse,data.frame('Model'="MARS1",'RMSE.IS'=rmse(df.train$KWHSPC,mars1$fitted.values),
                               'RMSE.OS'=rmse(predict(mars1,df.test),df.test$KWHSPC),stringsAsFactors = F))
@@ -290,7 +290,7 @@ plot(y=mars1$residuals,x=mars1$fitted.values,xlab='Predicted',ylab='Residuals',m
 abline(h=0)
 dev.off()
 
-# GAM----
+# GAM1----
 scope<-gam.scope(df.train,response = which(colnames(df.train)==resp),smoother = 's',
                  arg=c("df=4","df=6","d=8"),form=T)
 form<-as.formula(paste0(resp,"~", paste0(colnames(df.train[,!names(df.train) %in% resp]),collapse="+")))
@@ -351,3 +351,31 @@ bart2.cv<-crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
 rmse.cv<-rbind(rmse.cv,data.frame('Model'='bart2','RMSE.IS'=bart2.cv[[2]],
                                   'RMSE.OS'=rmse(predict(bart2,df.test[,imp[!imp %in% which(names(df.train)==resp)]]),df.test[,resp])))
 rm(imp)
+
+# MARS2----
+mars1.importance<-evimp(mars1,trim = F)
+png(filename = "plots/33.mars1_evimp.png",width=10,height=10,units = 'in',
+    res=300)
+plot(mars1.importance)
+dev.off()
+imp<-names(mars1.importance[mars1.importance[,'nsubsets']>0,'nsubsets'])
+form<-as.formula(paste0(resp,'~',paste0(imp,collapse = '+')))
+mars2<-earth(formula=form,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="MARS2",'RMSE.IS'=rmse(df.train$KWHSPC,mars2$fitted.values),
+                              'RMSE.OS'=rmse(predict(mars2,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/34.mars2_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=df.train$KWHSPC,y=mars2$fitted.values,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/35.mars2_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(mars2$residuals,main="Normality Plot for Residuals")
+qqline(mars2$residuals)
+dev.off()
+png(filename = "plots/36.mars2_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=mars2$residuals,x=mars2$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+
