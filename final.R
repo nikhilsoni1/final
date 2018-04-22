@@ -23,40 +23,63 @@ completeness<-function(dat)
   c=sum(is.na(dat))/(a*b)
   return(round(100*(1-c),digits=2))
 }
-crossValidate<-function(cvtype,folds=10,dataset,model,resp)
+crossValidate<-function(cvtype='kfold',folds=10,dataset,model=NULL,resp,typ=1)
 {
-  df<-dataset
-  l <- vector("list", 2)
-  if (cvtype=="kfold")
+  if(typ==1)
   {
-    df$knum<-sample(1:folds,nrow(df),replace = TRUE)
-    rmse_kfold<-0
-    for (i in 1:folds)
+    df<-dataset
+    l <- vector("list", 2)
+    if (cvtype=="kfold")
     {
-      df.test<-df[df$knum==i,]
+      df$knum<-sample(1:folds,nrow(df),replace = TRUE)
+      rmse_kfold<-0
+      for (i in 1:folds)
+      {
+        df.test<-df[df$knum==i,]
+        df.train<-df[!df$knum==i,]
+        pred<-predict(model,df.test)
+        pred[is.na(pred)]<-mean(pred,na.rm = T)
+        rmse_kfold<-cbind(rmse_kfold,rmse(df.test[,resp],pred))
+      }
+      l[[1]]<-rmse_kfold[,-1]
+      l[[2]]<-mean(rmse_kfold[,-1])
+      return (l)
+    }
+    else if (cvtype=="LOOCV"||cvtype=="loocv")
+    {
+      rmse_loocv<-0
+      for (i in 1:nrow(df))
+      {
+        df.test<-df[i,]
+        df.train<-df[-i,]
+        pred<-predict(model,df.test)
+        pred[is.na(pred)]<-mean(df.train[,resp])
+        rmse_loocv<-cbind(rmse_loocv,rmse(df.test[,resp],pred))
+      }
+      l[[1]]<-rmse_loocv[,-1]
+      l[[2]]<-mean(rmse_loocv[,-1])
+      return(l)
+    }
+  }
+  else if(typ==2)
+  {
+    df<-dataset
+    df$knum<-sample(1:folds,nrow(df),replace = T)
+    dnt<-c('knum',resp)
+    l <- vector("list", 2)
+    rmse_kfold<-0
+    for(i in 1:folds)
+    {
       df.train<-df[!df$knum==i,]
-      pred<-predict(model,df.test)
-      pred[is.na(pred)]<-mean(pred,na.rm = T)
+      df.test<-df[df$knum==i,]
+      model<-bartMachine(df.train[,!names(df.train) %in% dnt],df.train[,resp],verbose=F)
+      pred<-predict(model,df.test[,!names(df.test) %in% dnt])
       rmse_kfold<-cbind(rmse_kfold,rmse(df.test[,resp],pred))
+      print(i)
     }
     l[[1]]<-rmse_kfold[,-1]
     l[[2]]<-mean(rmse_kfold[,-1])
     return (l)
-  }
-  else if (cvtype=="LOOCV"||cvtype=="loocv")
-  {
-    rmse_loocv<-0
-    for (i in 1:nrow(df))
-    {
-      df.test<-df[i,]
-      df.train<-df[-i,]
-      pred<-predict(model,df.test)
-      pred[is.na(pred)]<-mean(df.train[,resp])
-      rmse_loocv<-cbind(rmse_loocv,rmse(df.test[,resp],pred))
-    }
-    l[[1]]<-rmse_loocv[,-1]
-    l[[2]]<-mean(rmse_loocv[,-1])
-    return(l)
   }
 }
 loadBart<-function()
@@ -321,3 +344,6 @@ plot(y=bart2$residuals,x=bart2$y,xlab='Predicted',ylab='Residuals',main='Residua
 abline(h=0)
 dev.off()
 
+imp<-append(imp,which(names(df.train)==resp))
+crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
+crossValidate()
