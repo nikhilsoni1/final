@@ -120,9 +120,8 @@ df.test<-master.test
 # BART1----
 bart1<-bartMachine(X=df.train[,!names(df.train) %in% resp],y=df.train[,resp],
                    serialize = TRUE,run_in_sample = TRUE)
-rmse <- rbind(rmse,data.frame('BART1',rmse(bart1$y,bart1$y_hat_train),
-                         rmse(predict(bart1,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
-colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
+rmse <- rbind(rmse,data.frame('Model'='BART1','RMSE.IS'=rmse(bart1$y,bart1$y_hat_train),
+                         'RMSE.OS'=rmse(predict(bart1,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
 png(filename = "plots/1.bart1_y_yhat.png",width=10,height=10,units = 'in',
     res=300)
 plot(x=bart1$y,y=bart1$y_hat_train,xlab="Actual",ylab="Predicted",
@@ -148,8 +147,8 @@ dev.off()
 # BART1.CV----
 bart1.cv<-bartMachineCV(X=df.train[,!names(df.train) %in% resp],y=df.train[,resp],
                         serialize = TRUE,k_folds = 10)
-rmse <- rbind(rmse,data.frame('BART1.CV',rmse(bart1.cv$y,bart1.cv$y_hat_train),
-                              rmse(predict(bart1.cv,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
+rmse <- rbind(rmse,data.frame('Model'='BART1.CV','RMSE.IS'=rmse(bart1.cv$y,bart1.cv$y_hat_train),
+                              'RMSE.OS'=rmse(predict(bart1.cv,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
 colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
 png(filename = "plots/6.bart1.cv_y_yhat.png",width=10,height=10,units = 'in',
     res=300)
@@ -174,5 +173,7 @@ png(filename = "plots/10.bart1.cv_var_imp.png",width=10,height=10,units = 'in',
 investigate_var_importance(bart1.cv, num_replicates_for_avg = 20)
 dev.off()
 # RF1----
-rf1<-randomForest(resp~. ,df.train)
+rf1<-randomForest(KWHSPC~. ,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="RF1",'RMSE.IS'=rmse(rf1$y,rf1$predicted),
+                              'RMSE.OS'=rmse(predict(rf1,df.test),df.test$KWHSPC),stringsAsFactors = F))
 save(list=ls(all=T),file='final.RData')
