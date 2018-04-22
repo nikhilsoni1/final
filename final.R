@@ -7,6 +7,8 @@ load(paste0(dirname(rstudioapi::getSourceEditorContext()$path), '/final.Rdata'))
 library(corrplot)
 library(gam)
 library(ModelMetrics)
+library(randomForest)
+library(e1071)
 # functions----
 completeness<-function(dat)
 {
@@ -89,7 +91,8 @@ master.train<-master[rows,]
 master.test<-master[-rows,]
 cat("\014")
 rm(master.az,ucol,ucol.x,ucol.y,rows)
-
+rmse<-data.frame(matrix(ncol=3,nrow=0))
+colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
 # EDA----
 lT2<-rapply(master.train,function(x)length(unique(x)))>2 # All factors with less than 2 unique values were dropped for the purposes of EDA
 lT2<-names(lT2[which(lT2==FALSE)])
@@ -115,8 +118,113 @@ dev.off()
 cat("\014")
 df.train<-master.train
 df.test<-master.test
-# BART----
+# BART1----
 bart1<-bartMachine(X=df.train[,!names(df.train) %in% resp],y=df.train[,resp],
-                   serialize = TRUE)
+                   serialize = TRUE,run_in_sample = TRUE)
+rmse <- rbind(rmse,data.frame('Model'='BART1','RMSE.IS'=rmse(bart1$y,bart1$y_hat_train),
+                         'RMSE.OS'=rmse(predict(bart1,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
+png(filename = "plots/1.bart1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=bart1$y,y=bart1$y_hat_train,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/2.bart1_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(bart1$residuals,main="Normality Plot for Residuals")
+qqline(bart1$residuals)
+dev.off()
+png(filename = "plots/3.bart1_yyhat_credible.png",width=10,height=10,units = 'in',
+    res=300)
+plot_y_vs_yhat(bart1, credible_intervals = TRUE)
+dev.off()
+png(filename = "plots/4.bart1_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=bart1$residuals,x=bart1$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+png(filename = "plots/5.bart1_var_imp.png",width=10,height=10,units = 'in',
+    res=300)
+investigate_var_importance(bart1, num_replicates_for_avg = 20)
+dev.off()
+# BART1.CV----
+bart1.cv<-bartMachineCV(X=df.train[,!names(df.train) %in% resp],y=df.train[,resp],
+                        serialize = TRUE,k_folds = 10)
+rmse <- rbind(rmse,data.frame('Model'='BART1.CV','RMSE.IS'=rmse(bart1.cv$y,bart1.cv$y_hat_train),
+                              'RMSE.OS'=rmse(predict(bart1.cv,df.test[,!names(df.test) %in% resp]),df.test[,resp])))
+colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
+png(filename = "plots/6.bart1.cv_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=bart1.cv$y,y=bart1.cv$y_hat_train,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/7.bart1.cv_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(bart1.cv$residuals,main="Normality Plot for Residuals")
+qqline(bart1.cv$residuals)
+dev.off()
+png(filename = "plots/8.bart1.cv_yyhat_credible.png",width=10,height=10,units = 'in',
+    res=300)
+plot_y_vs_yhat(bart1.cv, credible_intervals = TRUE)
+dev.off()
+png(filename = "plots/9.bart1.cv_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=bart1.cv$residuals,x=bart1.cv$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+png(filename = "plots/10.bart1.cv_var_imp.png",width=10,height=10,units = 'in',
+    res=300)
+investigate_var_importance(bart1.cv, num_replicates_for_avg = 20)
+dev.off()
+# RF1----
+rf1<-randomForest(KWHSPC~. ,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="RF1",'RMSE.IS'=rmse(rf1$y,rf1$predicted),
+                              'RMSE.OS'=rmse(predict(rf1,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/11.rf1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=rf1$y,y=rf1$predicted,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/12.rf11_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(rf1$predicted-rf1$y,main="Normality Plot for Residuals")
+qqline(rf1$predicted-rf1$y)
+dev.off()
+png(filename = "plots/13.rf11_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(rf1$predicted-rf1$y,main="Normality Plot for Residuals")
+qqline(rf1$predicted-rf1$y)
+dev.off()
+png(filename = "plots/14.rf11_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=rf1$predicted-rf1$y,x=rf1$predicted,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+png(filename = "plots/15.rf11_resid_v_predictors_matrix.png",width=100,height=100,units = 'in',
+    res=300)
+pairs(rf1$predicted-rf1$y~.,data=df.train)
+dev.off()
+# SVM----
+svm1<-svm(KWHSPC~.,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="SVM1",'RMSE.IS'=rmse(df.train$KWHSPC,svm1$fitted),
+                              'RMSE.OS'=rmse(predict(svm1,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/16.svm1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=df.train$KWHSPC,y=svm1$fitted,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/17.svm1_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(svm1$residuals,main="Normality Plot for Residuals")
+qqline(svm1$residuals)
+dev.off()
+png(filename = "plots/18.svm1_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=svm1$residuals,x=svm1$fitted,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+# png(filename = "plots/15.rf11_resid_v_predictors_matrix.png",width=100,height=100,units = 'in',
+#     res=300)
+# pairs(rf1$predicted-rf1$y~.,data=df.train)
+# dev.off()
 
 save(list=ls(all=T),file='final.RData')
