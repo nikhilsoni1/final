@@ -9,6 +9,8 @@ library(gam)
 library(ModelMetrics)
 library(randomForest)
 library(e1071)
+library(rpart)
+library(rpart.plot)
 # functions----
 completeness<-function(dat)
 {
@@ -222,9 +224,24 @@ png(filename = "plots/18.svm1_resid_v_pred.png",width=10,height=10,units = 'in',
 plot(y=svm1$residuals,x=svm1$fitted,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
 abline(h=0)
 dev.off()
-# png(filename = "plots/15.rf11_resid_v_predictors_matrix.png",width=100,height=100,units = 'in',
-#     res=300)
-# pairs(rf1$predicted-rf1$y~.,data=df.train)
-# dev.off()
+# RPart----
+rpart1<-rpart(KWHSPC~.,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="RPART1",'RMSE.IS'=rmse(rpart1$y,predict(rpart1,df.train)),
+                              'RMSE.OS'=rmse(predict(rpart1,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/19.rpart1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=df.train$KWHSPC,y=predict(rpart1,df.train),xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/20.rpart1_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(predict(rpart1,df.train)-rpart1$y,main="Normality Plot for Residuals")
+qqline(predict(rpart1,df.train)-rpart1$y)
+dev.off()
+png(filename = "plots/21.rpart1_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=predict(rpart1,df.train)-rpart1$y,x=predict(rpart1,df.train),xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
 
 save(list=ls(all=T),file='final.RData')
