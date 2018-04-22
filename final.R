@@ -11,6 +11,7 @@ library(randomForest)
 library(e1071)
 library(rpart)
 library(rpart.plot)
+library(earth)
 # functions----
 completeness<-function(dat)
 {
@@ -65,7 +66,6 @@ loadBart<-function()
   library('bartMachine')
   set_bart_machine_num_cores(20)
 }
-
 # dfcreate----
 master<-read.csv("inp/recs2009_public.csv")
 master.az<-master[which(master$REPORTABLE_DOMAIN==24),]
@@ -241,6 +241,26 @@ dev.off()
 png(filename = "plots/21.rpart1_resid_v_pred.png",width=10,height=10,units = 'in',
     res=300)
 plot(y=predict(rpart1,df.train)-rpart1$y,x=predict(rpart1,df.train),xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+
+# MARS----
+mars1<-earth(KWHSPC~.,df.train)
+rmse <- rbind(rmse,data.frame('Model'="MARS1",'RMSE.IS'=rmse(df.train$KWHSPC,mars1$fitted.values),
+                              'RMSE.OS'=rmse(predict(mars1,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/22.mars1_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=df.train$KWHSPC,y=mars1$fitted.values,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/23.mars1_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(mars1$residuals,main="Normality Plot for Residuals")
+qqline(mars1$residuals)
+dev.off()
+png(filename = "plots/24.mars1_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=mars1$residuals,x=mars1$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
 abline(h=0)
 dev.off()
 
