@@ -23,40 +23,63 @@ completeness<-function(dat)
   c=sum(is.na(dat))/(a*b)
   return(round(100*(1-c),digits=2))
 }
-crossValidate<-function(cvtype,folds=10,dataset,model,resp)
+crossValidate<-function(cvtype='kfold',folds=10,dataset,model=NULL,resp,typ=1)
 {
-  df<-dataset
-  l <- vector("list", 2)
-  if (cvtype=="kfold")
+  if(typ==1)
   {
-    df$knum<-sample(1:folds,nrow(df),replace = TRUE)
-    rmse_kfold<-0
-    for (i in 1:folds)
+    df<-dataset
+    l <- vector("list", 2)
+    if (cvtype=="kfold")
     {
-      df.test<-df[df$knum==i,]
+      df$knum<-sample(1:folds,nrow(df),replace = TRUE)
+      rmse_kfold<-0
+      for (i in 1:folds)
+      {
+        df.test<-df[df$knum==i,]
+        df.train<-df[!df$knum==i,]
+        pred<-predict(model,df.test)
+        pred[is.na(pred)]<-mean(pred,na.rm = T)
+        rmse_kfold<-cbind(rmse_kfold,rmse(df.test[,resp],pred))
+      }
+      l[[1]]<-rmse_kfold[,-1]
+      l[[2]]<-mean(rmse_kfold[,-1])
+      return (l)
+    }
+    else if (cvtype=="LOOCV"||cvtype=="loocv")
+    {
+      rmse_loocv<-0
+      for (i in 1:nrow(df))
+      {
+        df.test<-df[i,]
+        df.train<-df[-i,]
+        pred<-predict(model,df.test)
+        pred[is.na(pred)]<-mean(df.train[,resp])
+        rmse_loocv<-cbind(rmse_loocv,rmse(df.test[,resp],pred))
+      }
+      l[[1]]<-rmse_loocv[,-1]
+      l[[2]]<-mean(rmse_loocv[,-1])
+      return(l)
+    }
+  }
+  else if(typ==2)
+  {
+    df<-dataset
+    df$knum<-sample(1:folds,nrow(df),replace = T)
+    dnt<-c('knum',resp)
+    l <- vector("list", 2)
+    rmse_kfold<-0
+    for(i in 1:folds)
+    {
       df.train<-df[!df$knum==i,]
-      pred<-predict(model,df.test)
-      pred[is.na(pred)]<-mean(pred,na.rm = T)
+      df.test<-df[df$knum==i,]
+      model<-bartMachine(df.train[,!names(df.train) %in% dnt],df.train[,resp],verbose=F)
+      pred<-predict(model,df.test[,!names(df.test) %in% dnt])
       rmse_kfold<-cbind(rmse_kfold,rmse(df.test[,resp],pred))
+      print(i)
     }
     l[[1]]<-rmse_kfold[,-1]
     l[[2]]<-mean(rmse_kfold[,-1])
     return (l)
-  }
-  else if (cvtype=="LOOCV"||cvtype=="loocv")
-  {
-    rmse_loocv<-0
-    for (i in 1:nrow(df))
-    {
-      df.test<-df[i,]
-      df.train<-df[-i,]
-      pred<-predict(model,df.test)
-      pred[is.na(pred)]<-mean(df.train[,resp])
-      rmse_loocv<-cbind(rmse_loocv,rmse(df.test[,resp],pred))
-    }
-    l[[1]]<-rmse_loocv[,-1]
-    l[[2]]<-mean(rmse_loocv[,-1])
-    return(l)
   }
 }
 loadBart<-function()
@@ -95,6 +118,8 @@ master.test<-master[-rows,]
 cat("\014")
 rm(master.az,ucol,ucol.x,ucol.y,rows)
 rmse<-data.frame(matrix(ncol=3,nrow=0))
+colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
+rmse.cv<-data.frame(matrix(ncol=3,nrow=0))
 colnames(rmse)<-c('Model','RMSE.IS','RMSE.OS')
 # EDA----
 lT2<-rapply(master.train,function(x)length(unique(x)))>2 # All factors with less than 2 unique values were dropped for the purposes of EDA
@@ -245,7 +270,7 @@ plot(y=predict(rpart1,df.train)-rpart1$y,x=predict(rpart1,df.train),xlab='Predic
 abline(h=0)
 dev.off()
 
-# MARS----
+# MARS1----
 mars1<-earth(KWHSPC~.,df.train)
 rmse <- rbind(rmse,data.frame('Model'="MARS1",'RMSE.IS'=rmse(df.train$KWHSPC,mars1$fitted.values),
                               'RMSE.OS'=rmse(predict(mars1,df.test),df.test$KWHSPC),stringsAsFactors = F))
@@ -265,7 +290,7 @@ plot(y=mars1$residuals,x=mars1$fitted.values,xlab='Predicted',ylab='Residuals',m
 abline(h=0)
 dev.off()
 
-# GAM----
+# GAM1----
 scope<-gam.scope(df.train,response = which(colnames(df.train)==resp),smoother = 's',
                  arg=c("df=4","df=6","d=8"),form=T)
 form<-as.formula(paste0(resp,"~", paste0(colnames(df.train[,!names(df.train) %in% resp]),collapse="+")))
@@ -318,6 +343,39 @@ dev.off()
 png(filename = "plots/32.bart2_resid_v_pred.png",width=10,height=10,units = 'in',
     res=300)
 plot(y=bart2$residuals,x=bart2$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+
+imp<-append(imp,which(names(df.train)==resp))
+bart2.cv<-crossValidate(dataset = df.train[,imp],resp=resp,typ = 2)
+rmse.cv<-rbind(rmse.cv,data.frame('Model'='bart2','RMSE.IS'=bart2.cv[[2]],
+                                  'RMSE.OS'=rmse(predict(bart2,df.test[,imp[!imp %in% which(names(df.train)==resp)]]),df.test[,resp])))
+rm(imp)
+
+# MARS2----
+mars1.importance<-evimp(mars1,trim = F)
+png(filename = "plots/33.mars1_evimp.png",width=10,height=10,units = 'in',
+    res=300)
+plot(mars1.importance)
+dev.off()
+imp<-names(mars1.importance[mars1.importance[,'nsubsets']>0,'nsubsets'])
+form<-as.formula(paste0(resp,'~',paste0(imp,collapse = '+')))
+mars2<-earth(formula=form,data=df.train)
+rmse <- rbind(rmse,data.frame('Model'="MARS2",'RMSE.IS'=rmse(df.train$KWHSPC,mars2$fitted.values),
+                              'RMSE.OS'=rmse(predict(mars2,df.test),df.test$KWHSPC),stringsAsFactors = F))
+png(filename = "plots/34.mars2_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=df.train$KWHSPC,y=mars2$fitted.values,xlab="Actual",ylab="Predicted",
+     main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/35.mars2_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(mars2$residuals,main="Normality Plot for Residuals")
+qqline(mars2$residuals)
+dev.off()
+png(filename = "plots/36.mars2_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=mars2$residuals,x=mars2$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
 abline(h=0)
 dev.off()
 
