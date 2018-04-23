@@ -144,6 +144,10 @@ png(filename="plots/scatterplot.png",width=100,height=100,units="in",res=300)
 pairs(KWHSPC~.,data=master.train)
 dev.off()
 cat("\014")
+png(filename='plots/0.1corrplot.png',width=20,height=20,units='in',res=300)
+corrplot.mixed(cor(master.train[,-c(1,3,13,18)],use="complete.obs"),lower="number",
+         upper="circle",diag='l',tl.pos="lt")
+dev.off()
 df.train<-master.train
 df.test<-master.test
 # BART1----
