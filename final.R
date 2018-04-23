@@ -371,6 +371,8 @@ rmse.cv<-rbind(rmse.cv,data.frame('Model'='bart2','RMSE.IS'=bart2.cv[[2]],
                                   'RMSE.OS'=rmse(predict(bart2,df.test[,imp[!imp %in% which(names(df.train)==resp)]]),df.test[,resp])))
 rm(imp)
 
+imp<-bart1.cv.important$important_vars_local_col_nums
+bart2.cv<-bartMachineCV(X=df.train[,imp],y=df.train[,resp],serialize = TRUE,k_folds = 10)
 # MARS2----
 mars1.importance<-evimp(mars1,trim = F)
 png(filename = "plots/33.mars1_evimp.png",width=10,height=10,units = 'in',
@@ -421,6 +423,8 @@ mars2.cv[[2]]<-mean(model_RMSE[,-1])
 rm(temp.train,temp.test,temp,temp.pred,temp.model,model_RMSE,i)
 rmse.cv<-rbind(rmse.cv,data.frame('Model'='mars2','RMSE.IS'=mars2.cv[[2]],
                                   'RMSE.OS'=rmse(predict(mars2,df.test),df.test[,resp])))
+
+
 
 
 
