@@ -144,6 +144,12 @@ png(filename="plots/scatterplot.png",width=100,height=100,units="in",res=300)
 pairs(KWHSPC~.,data=master.train)
 dev.off()
 cat("\014")
+png(filename='plots/0.1corrplot.png',width=20,height=20,units='in',res=300)
+temp<-names(sapply(master,class)[which(sapply(master,class) %in% c('integer','numeric'))])
+corrplot.mixed(cor(master[,temp],use="complete.obs"),lower="number",
+         upper="circle",diag='l',tl.pos="lt")
+rm(temp)
+dev.off()
 df.train<-master.train
 df.test<-master.test
 # BART1----
@@ -371,8 +377,6 @@ rmse.cv<-rbind(rmse.cv,data.frame('Model'='bart2','RMSE.IS'=bart2.cv[[2]],
                                   'RMSE.OS'=rmse(predict(bart2,df.test[,imp[!imp %in% which(names(df.train)==resp)]]),df.test[,resp])))
 rm(imp)
 
-imp<-bart1.cv.important$important_vars_local_col_nums
-bart2.cv<-bartMachineCV(X=df.train[,imp],y=df.train[,resp],serialize = TRUE,k_folds = 10)
 # MARS2----
 mars1.importance<-evimp(mars1,trim = F)
 png(filename = "plots/33.mars1_evimp.png",width=10,height=10,units = 'in',
@@ -428,4 +432,133 @@ rmse.cv<-rbind(rmse.cv,data.frame('Model'='mars2','RMSE.IS'=mars2.cv[[2]],
 
 
 
+
+
+# Final Model----
+imp<-bart1.cv.important$important_vars_local_col_nums
+bart2<-bartMachineCV(X=df.train[,imp],y=df.train[,resp],serialize = TRUE,k_folds = 10)
+rmse <- rbind(rmse,data.frame('Model'='BART2','RMSE.IS'=rmse(bart2$y,bart2$y_hat_train),
+                              'RMSE.OS'=rmse(predict(bart2,df.test[,imp]),df.test[,resp])))
+png(filename = "plots/38.bart2_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=bart2$y,y=bart2$y_hat_train,xlab="Actual",ylab="Predicted",main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/39.bart2_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(bart2$residuals,main="Normality Plot for Residuals")
+qqline(bart2$residuals)
+dev.off()
+png(filename = "plots/40.bart2_yyhat_credible.png",width=10,height=10,units = 'in',
+    res=300)
+plot_y_vs_yhat(bart2, credible_intervals = TRUE)
+dev.off()
+png(filename = "plots/41.bart2_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=bart2$residuals,x=bart2$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+png(filename = "plots/42.bart2_var_imp.png",width=10,height=10,units = 'in',
+    res=300)
+investigate_var_importance(bart2, num_replicates_for_avg = 20)
+dev.off()
+png(filename = "plots/43.bart2_dolecol.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart2, 1, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/44.bart2_kwh.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart2, 2, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/45.bart2_dolelwth.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart2, 3, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/46.bart2_dolelsph.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart2, 4, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+
+# bart3----
+bart3.include<-c('DOLELCOL','KWH','DOLELWTH','DOLELSPH','DOLLAREL','TOTUCSQFT',
+                 'TOTCSQFT','TOTSQFT','AIA_ZONE','HDD30YR')
+bart3<-bartMachineCV(X=df.train[,names(df.train) %in% bart3.include],y=df.train[,resp],serialize=T)
+rmse <- rbind(rmse,data.frame('Model'='BART3','RMSE.IS'=rmse(bart3$y,bart3$y_hat_train),
+                              'RMSE.OS'=rmse(predict(bart3,df.test[,names(df.train) %in% bart3.include]),df.test[,resp])))
+png(filename = "plots/47.bart3_y_yhat.png",width=10,height=10,units = 'in',
+    res=300)
+plot(x=bart3$y,y=bart3$y_hat_train,xlab="Actual",ylab="Predicted",main="Y vs. Y-hat")
+dev.off()
+png(filename = "plots/48.bart3_resid_normal.png",width=10,height=10,units = 'in',
+    res=300)
+qqnorm(bart3$residuals,main="Normality Plot for Residuals")
+qqline(bart3$residuals)
+dev.off()
+png(filename = "plots/49.bart3_yyhat_credible.png",width=10,height=10,units = 'in',
+    res=300)
+plot_y_vs_yhat(bart3, credible_intervals = TRUE)
+dev.off()
+png(filename = "plots/50.bart3_resid_v_pred.png",width=10,height=10,units = 'in',
+    res=300)
+plot(y=bart3$residuals,x=bart3$y,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
+abline(h=0)
+dev.off()
+png(filename = "plots/51.bart3_var_imp.png",width=10,height=10,units = 'in',
+    res=300)
+investigate_var_importance(bart3, num_replicates_for_avg = 20)
+dev.off()
+png(filename = "plots/52.bart3_TOTUCSQFT.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 1, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/53.bart3_DOLELSPH.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 2, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/54.bart3_TOTCSQFT.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 3, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/55.bart3_DOLLAREL.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 4, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/56.bart3_DOLELWTH.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 5, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/57.bart3_HDD30YR.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 6, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/58.bart3_KWH.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 7, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/59.bart3_DOLELCOL.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 8, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename ="plots/60.bart3_TOTSQFT.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 9, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename = "plots/61.bart3_var_selection_by_permute.png",width=10,height=10,units = 'in',res=300)
+bart3.cv.important<-var_selection_by_permute(bart3, 
+                                             num_reps_for_avg = 10, num_permute_samples = 100, 
+                                             num_trees_for_permute = 20, alpha = 0.05, 
+                                             plot = TRUE, num_var_plot = Inf, bottom_margin = 10)
+dev.off()
 
