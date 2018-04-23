@@ -434,7 +434,7 @@ rmse.cv<-rbind(rmse.cv,data.frame('Model'='mars2','RMSE.IS'=mars2.cv[[2]],
 
 
 
-# Final Model----
+# Final Model(Nope)----
 imp<-bart1.cv.important$important_vars_local_col_nums
 bart2<-bartMachineCV(X=df.train[,imp],y=df.train[,resp],serialize = TRUE,k_folds = 10)
 rmse <- rbind(rmse,data.frame('Model'='BART2','RMSE.IS'=rmse(bart2$y,bart2$y_hat_train),
@@ -484,7 +484,7 @@ dev.off()
 
 # bart3----
 bart3.include<-c('DOLELCOL','KWH','DOLELWTH','DOLELSPH','DOLLAREL','TOTUCSQFT',
-                 'TOTCSQFT','TOTSQFT','AIA_ZONE','HDD30YR')
+                 'TOTCSQFT','TOTSQFT','AIA_Zone','HDD30YR')
 bart3<-bartMachineCV(X=df.train[,names(df.train) %in% bart3.include],y=df.train[,resp],serialize=T)
 rmse <- rbind(rmse,data.frame('Model'='BART3','RMSE.IS'=rmse(bart3$y,bart3$y_hat_train),
                               'RMSE.OS'=rmse(predict(bart3,df.test[,names(df.train) %in% bart3.include]),df.test[,resp])))
@@ -550,15 +550,22 @@ pd_plot(bart3, 8,
         levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
         lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
 dev.off()
-png(filename ="plots/60.bart3_TOTSQFT.png",width=10,height=10,units = 'in',res=300)
+png(filename ="plots/60.bart3_AIA_Zone.png",width=10,height=10,units = 'in',res=300)
 pd_plot(bart3, 9, 
         levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
         lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
 dev.off()
-png(filename = "plots/61.bart3_var_selection_by_permute.png",width=10,height=10,units = 'in',res=300)
+png(filename ="plots/61.bart3_TOTSQFT.png",width=10,height=10,units = 'in',res=300)
+pd_plot(bart3, 10, 
+        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
+        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+dev.off()
+png(filename = "plots/62.bart3_var_selection_by_permute.png",width=10,height=10,units = 'in',res=300)
 bart3.cv.important<-var_selection_by_permute(bart3, 
                                              num_reps_for_avg = 10, num_permute_samples = 100, 
                                              num_trees_for_permute = 20, alpha = 0.05, 
                                              plot = TRUE, num_var_plot = Inf, bottom_margin = 10)
 dev.off()
 
+
+# Final model----
