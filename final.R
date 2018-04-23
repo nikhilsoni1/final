@@ -484,7 +484,7 @@ dev.off()
 
 # bart3----
 bart3.include<-c('DOLELCOL','KWH','DOLELWTH','DOLELSPH','DOLLAREL','TOTUCSQFT',
-                 'TOTCSQFT','TOTSQFT','AIA_ZONE','HDD30YR')
+                 'TOTCSQFT','TOTSQFT','AIA_Zone','HDD30YR')
 bart3<-bartMachineCV(X=df.train[,names(df.train) %in% bart3.include],y=df.train[,resp],serialize=T)
 rmse <- rbind(rmse,data.frame('Model'='BART3','RMSE.IS'=rmse(bart3$y,bart3$y_hat_train),
                               'RMSE.OS'=rmse(predict(bart3,df.test[,names(df.train) %in% bart3.include]),df.test[,resp])))
