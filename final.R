@@ -434,7 +434,7 @@ rmse.cv<-rbind(rmse.cv,data.frame('Model'='mars2','RMSE.IS'=mars2.cv[[2]],
 
 
 
-# Final Model----
+# Final Model(Nope)----
 imp<-bart1.cv.important$important_vars_local_col_nums
 bart2<-bartMachineCV(X=df.train[,imp],y=df.train[,resp],serialize = TRUE,k_folds = 10)
 rmse <- rbind(rmse,data.frame('Model'='BART2','RMSE.IS'=rmse(bart2$y,bart2$y_hat_train),
@@ -567,3 +567,5 @@ bart3.cv.important<-var_selection_by_permute(bart3,
                                              plot = TRUE, num_var_plot = Inf, bottom_margin = 10)
 dev.off()
 
+
+# Final model----
