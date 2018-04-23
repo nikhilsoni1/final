@@ -569,3 +569,5 @@ dev.off()
 
 
 # Final model----
+finalmodel<-bart3
+save(finalmodel,file='submission/sonin.RData')
