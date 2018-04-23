@@ -315,6 +315,25 @@ plot(y=gam1$residuals,x=gam1$fitted.values,xlab='Predicted',ylab='Residuals',mai
 abline(h=0)
 dev.off()
 
+temp<-df.train
+temp$knum<-sample(1:10,nrow(temp),replace = T)
+model_RMSE<-0
+for(i in 1:10)
+{
+  temp.train<-temp[!temp$knum==i,]
+  temp.test<-temp[temp$knum==i,]
+  temp.model<-earth(formula=gam1$formula,data=temp.train)
+  temp.pred<-predict(temp.model,temp.test[,-c(1,2,3,4)])
+  model_RMSE<-cbind(model_RMSE,rmse(temp.test[,resp],temp.pred))
+  print(i)
+}
+gam1.cv<-vector("list", 2)
+gam1.cv[[1]]<-model_RMSE[,-1]
+gam1.cv[[2]]<-mean(model_RMSE[,-1])
+rm(temp.train,temp.test,temp,temp.pred,temp.model,model_RMSE,i)
+rmse.cv<-rbind(rmse.cv,data.frame('Model'='GAM1','RMSE.IS'=gam1.cv[[2]],
+                                  'RMSE.OS'=rmse(predict(gam1,df.test),df.test[,resp])))
+
 # BART2----
 png(filename = "plots/28.bart2_var_selection_by_permute.png",width=10,height=10,units = 'in',res=300)
 bart1.cv.important<-var_selection_by_permute(bart1.cv, 
@@ -378,4 +397,31 @@ png(filename = "plots/36.mars2_resid_v_pred.png",width=10,height=10,units = 'in'
 plot(y=mars2$residuals,x=mars2$fitted.values,xlab='Predicted',ylab='Residuals',main='Residuals vs. Predicted')
 abline(h=0)
 dev.off()
+png(filename = "plots/37.mars2_resid_v_predictors.png",width=10,height=10,units = 'in',
+    res=300)
+pairs(mars2$residuals~.,data=df.train[,imp])
+dev.off()
+mars2.cv<-crossValidate(dataset=df.train,model=mars2,resp=resp)
+
+temp<-df.train
+temp$knum<-sample(1:10,nrow(temp),replace = T)
+model_RMSE<-0
+for(i in 1:10)
+{
+  temp.train<-temp[!temp$knum==i,]
+  temp.test<-temp[temp$knum==i,]
+  temp.model<-earth(formula=form,data=temp.train)
+  temp.pred<-predict(temp.model,temp.test[,-c(1,2,3,4)])
+  model_RMSE<-cbind(model_RMSE,rmse(temp.test[,resp],temp.pred))
+  print(i)
+}
+mars2.cv<-vector("list", 2)
+mars2.cv[[1]]<-model_RMSE[,-1]
+mars2.cv[[2]]<-mean(model_RMSE[,-1])
+rm(temp.train,temp.test,temp,temp.pred,temp.model,model_RMSE,i)
+rmse.cv<-rbind(rmse.cv,data.frame('Model'='mars2','RMSE.IS'=mars2.cv[[2]],
+                                  'RMSE.OS'=rmse(predict(mars2,df.test),df.test[,resp])))
+
+
+
 
