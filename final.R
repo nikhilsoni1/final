@@ -479,7 +479,7 @@ dev.off()
 # bart3----
 bart3.include<-c('DOLELCOL','KWH','DOLELWTH','DOLELSPH','DOLLAREL','TOTUCSQFT',
                  'TOTCSQFT','TOTSQFT','AIA_ZONE','HDD30YR')
-bart3<-bartMachine(X=df.train[,names(df.train) %in% bart3.include],y=df.train[,resp],serialize=T)
+bart3<-bartMachineCV(X=df.train[,names(df.train) %in% bart3.include],y=df.train[,resp],serialize=T)
 rmse <- rbind(rmse,data.frame('Model'='BART3','RMSE.IS'=rmse(bart3$y,bart3$y_hat_train),
                               'RMSE.OS'=rmse(predict(bart3,df.test[,names(df.train) %in% bart3.include]),df.test[,resp])))
 png(filename = "plots/47.bart3_y_yhat.png",width=10,height=10,units = 'in',
@@ -555,3 +555,4 @@ bart3.cv.important<-var_selection_by_permute(bart3,
                                              num_trees_for_permute = 20, alpha = 0.05, 
                                              plot = TRUE, num_var_plot = Inf, bottom_margin = 10)
 dev.off()
+
