@@ -551,9 +551,7 @@ pd_plot(bart3, 8,
         lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
 dev.off()
 png(filename ="plots/60.bart3_AIA_Zone.png",width=10,height=10,units = 'in',res=300)
-pd_plot(bart3, 9, 
-        levs = c(0.05, seq(from = 0.1, to = 0.9, by = 0.1), 0.95), 
-        lower_ci = 0.025, upper_ci = 0.975, prop_data = 1)
+pd_plot(bart3,9)
 dev.off()
 png(filename ="plots/61.bart3_TOTSQFT.png",width=10,height=10,units = 'in',res=300)
 pd_plot(bart3, 10, 
@@ -569,3 +567,5 @@ dev.off()
 
 
 # Final model----
+finalmodel<-bart3
+save(finalmodel,file='submission/sonin.RData')
